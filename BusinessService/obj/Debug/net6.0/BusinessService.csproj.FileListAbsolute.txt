@@ -1,0 +1,15 @@
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\bin\Debug\net6.0\BusinessService.deps.json
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\bin\Debug\net6.0\BusinessService.dll
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\bin\Debug\net6.0\BusinessService.pdb
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\bin\Debug\net6.0\ApplicationCore.dll
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\bin\Debug\net6.0\ApplicationCore.pdb
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\obj\Debug\net6.0\BusinessService.csproj.AssemblyReference.cache
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\obj\Debug\net6.0\BusinessService.GeneratedMSBuildEditorConfig.editorconfig
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\obj\Debug\net6.0\BusinessService.AssemblyInfoInputs.cache
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\obj\Debug\net6.0\BusinessService.AssemblyInfo.cs
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\obj\Debug\net6.0\BusinessService.csproj.CoreCompileInputs.cache
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\obj\Debug\net6.0\BusinessService.csproj.CopyComplete
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\obj\Debug\net6.0\BusinessService.dll
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\obj\Debug\net6.0\refint\BusinessService.dll
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\obj\Debug\net6.0\BusinessService.pdb
+E:\FPTU\PRN221_RE\Group-Project\Foody-E-commerce\BusinessService\obj\Debug\net6.0\ref\BusinessService.dll
