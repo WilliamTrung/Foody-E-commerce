@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApplicationCore.Models
 {
-    public partial class Account
+    public partial class Account : IsDelete
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -24,5 +24,6 @@ namespace ApplicationCore.Models
         public virtual Role Role { get; set; } = null!;
 
         public virtual ICollection<Order>? Orders { get; set; }
+        public bool IsDeleted { get; set; } = false;
     }
 }

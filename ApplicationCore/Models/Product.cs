@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApplicationCore.Models
 {
-    public partial class Product
+    public partial class Product : IsDelete
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -22,6 +22,7 @@ namespace ApplicationCore.Models
 
         public virtual Category? Category { get; set; }
         public virtual Supplier? Supplier { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public virtual ICollection<OrderDetail>? OrderDetails { get; set; }
     }
 }

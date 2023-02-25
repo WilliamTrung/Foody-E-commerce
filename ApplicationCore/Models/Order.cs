@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ApplicationCore.Models
 {
-    public partial class Order
+    public partial class Order : IsDelete
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -20,6 +20,7 @@ namespace ApplicationCore.Models
         [Column(TypeName ="money")]
         public decimal TotalPrice { get; set; }
         public virtual Account? Account { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = null!;
     }
 }

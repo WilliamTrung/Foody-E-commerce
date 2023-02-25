@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 
 namespace ApplicationCore.Models
 {
-    public class Role
+    public class Role : IsDelete
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Name { get; set; } = null!;
+        public bool IsDeleted { get; set; } = false;
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using ApplicationCore;
 using ApplicationCore.Models;
 using BusinessService.UnitOfWork;
 
@@ -13,15 +14,16 @@ namespace FoodyWebApplication.Controllers
     public class AccountController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+
         public AccountController(IUnitOfWork unitOfWork)
         {
-            _unitOfWork = unitOfWork;
+            _unitOfWork= unitOfWork;
         }
 
         // GET: Account
         public async Task<IActionResult> Index()
         {
-            var foodyContext = await _unitOfWork.AccountService.Get(expression: null, "Role");
+            var foodyContext = await _unitOfWork.AccountService.Get(includeProperties: "Role");
             return View(foodyContext);
         }
 
@@ -32,7 +34,7 @@ namespace FoodyWebApplication.Controllers
             {
                 return NotFound();
             }
-
+            
             var account = await _unitOfWork.AccountService.GetFirst(c => c.AccountId == id, "Role");
             if (account == null)
             {
@@ -59,7 +61,7 @@ namespace FoodyWebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _unitOfWork.AccountService.Add(account);                
+                await _unitOfWork.AccountService.Add(account);
                 return RedirectToAction(nameof(Index));
             }
             var roles = await _unitOfWork.RoleService.Get();
@@ -90,7 +92,7 @@ namespace FoodyWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AccountId,Username,RoleId,Password,Address,Phone")] Account account)
+        public async Task<IActionResult> Edit(int id, [Bind("AccountId,Username,RoleId,Password,Address,Phone,IsDeleted")] Account account)
         {
             if (id != account.AccountId)
             {
@@ -105,7 +107,7 @@ namespace FoodyWebApplication.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    return NotFound();                
+                    return NotFound();
                 }
                 return RedirectToAction(nameof(Index));
             }

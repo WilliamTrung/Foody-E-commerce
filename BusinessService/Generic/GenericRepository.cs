@@ -29,7 +29,14 @@ namespace BusinessService.Generic
 
         public virtual async Task Delete(TEntity entity)
         {
-            _entities.Remove(entity);
+            if(entity is IsDelete)
+            {
+                ((IsDelete)entity).IsDeleted = true;
+            } else
+            {
+                _entities.Remove(entity);
+            }
+            
             await _context.SaveChangesAsync();
         }
 

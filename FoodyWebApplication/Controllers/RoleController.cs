@@ -35,7 +35,7 @@ namespace FoodyWebApplication.Controllers
                 return NotFound();
             }
 
-            var role = await _unitOfWork.RoleService.GetFirst(c => c.Id == id);                
+            var role = await _unitOfWork.RoleService.GetFirst(c => c.Id == id);
             if (role == null)
             {
                 return NotFound();
@@ -86,7 +86,7 @@ namespace FoodyWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Role role)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,IsDeleted")] Role role)
         {
             if (id != role.Id)
             {
@@ -130,11 +130,11 @@ namespace FoodyWebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var role = await _unitOfWork.RoleService.GetFirst(c => c.Id == id); ;
+            var role = await _unitOfWork.RoleService.GetFirst(c => c.Id == id);
             if (role != null)
             {
                 await _unitOfWork.RoleService.Delete(role);
-            }
+            }            
             return RedirectToAction(nameof(Index));
         }
     }
