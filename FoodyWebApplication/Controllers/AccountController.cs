@@ -8,6 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using ApplicationCore;
 using ApplicationCore.Models;
 using BusinessService.UnitOfWork;
+using FoodyWebApplication.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace FoodyWebApplication.Controllers
 {
@@ -145,5 +150,47 @@ namespace FoodyWebApplication.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+        public IActionResult Login(string ReturnUrl = "")
+        {
+
+            LoginModel objLoginModel = new LoginModel();
+            objLoginModel.ReturnUrl = ReturnUrl;
+            return View(objLoginModel);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginModel objLoginModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = _unitOfWork.AccountService.GetFirst(x => x.Username == objLoginModel.UserName && x.Password == objLoginModel.Password, includeProperties: "Role").Result;
+                if (user != null)
+                {
+                    //A claim is a statement about a subject by an issuer and    
+                    //represent attributes of the subject that are useful in the context of authentication and authorization operations.
+                    var claims = new List<Claim>() {
+                        new Claim(ClaimTypes.Name, user.Username, ClaimValueTypes.String),
+                        new Claim(ClaimTypes.Role, user.Role.Name, ClaimValueTypes.String)
+                    };
+                    //Initialize a new instance of the ClaimsIdentity with the claims and authentication scheme    
+                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    //Initialize a new instance of the ClaimsPrincipal with ClaimsIdentity    
+                    var principal = new ClaimsPrincipal(identity);
+                    //SignInAsync is a Extension method for Sign in a principal for the specified scheme.    
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties()
+                    {
+                        IsPersistent = objLoginModel.RememberLogin
+                    });
+                    return LocalRedirect(objLoginModel.ReturnUrl);
+                }
+                else
+                {
+                    ViewBag.Message = "Invalid Credential";
+                    return View(user);
+                }
+            }
+            return View(objLoginModel);
+        }
+
     }
 }

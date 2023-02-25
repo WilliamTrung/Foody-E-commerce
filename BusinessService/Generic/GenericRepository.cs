@@ -42,16 +42,16 @@ namespace BusinessService.Generic
 
         public virtual async Task<IEnumerable<TEntity>> Get(Expression<Func<TEntity, bool>>? expression = null, params string[] includeProperties)
         {
-            var filter = _entities.AsNoTracking();
-            foreach(var property in includeProperties)
+            IQueryable<TEntity>? query = _entities;
+            query = expression == null ? query : query.Where(expression);
+            if (includeProperties != null)
             {
-                filter.Include(property);
+                foreach (var property in includeProperties)
+                {
+                    query = query.Include(property);
+                }
             }
-            if(expression != null)
-            {
-                filter = filter.Where(expression);
-            }
-            return await filter.ToListAsync();
+            return await query.ToListAsync();
         }
 
         public virtual async Task Update(TEntity entity)
