@@ -1,5 +1,5 @@
 ﻿using ApplicationCore;
-using ApplicationService.UnitOfWork;
+using BusinessService.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,10 +12,10 @@ namespace BusinessService.Generic
 {
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
-        public readonly PizzaStoreContext _context;
+        public readonly FoodyContext _context;
         public readonly IUnitOfWork _unitOfWork;
         private DbSet<TEntity> _entities;
-        public GenericRepository(PizzaStoreContext context, IUnitOfWork unitOfWork)
+        public GenericRepository(FoodyContext context, IUnitOfWork unitOfWork)
         {
             _context= context;
             _entities = _context.Set<TEntity>();

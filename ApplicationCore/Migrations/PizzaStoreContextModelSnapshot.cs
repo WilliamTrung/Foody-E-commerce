@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ApplicationCore.Migrations
 {
-    [DbContext(typeof(PizzaStoreContext))]
+    [DbContext(typeof(FoodyContext))]
     partial class PizzaStoreContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

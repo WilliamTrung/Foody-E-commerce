@@ -1,5 +1,4 @@
 ﻿using ApplicationCore;
-using BusinessService.IService;
 using BusinessService.Repository;
 using BusinessService.Service;
 using System;
@@ -8,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApplicationService.UnitOfWork
+namespace BusinessService.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -24,9 +23,11 @@ namespace ApplicationService.UnitOfWork
 
         public ISupplierService SupplierService { get; private set; } = null!;
 
-        private readonly PizzaStoreContext _context;
+        public IRoleService RoleService { get; private set; } = null!;
 
-        public UnitOfWork(PizzaStoreContext context)
+        private readonly FoodyContext _context;
+
+        public UnitOfWork(FoodyContext context)
         {
             _context = context;
             InitRepositories();
@@ -40,6 +41,7 @@ namespace ApplicationService.UnitOfWork
             OrderService = new OrderRepository(_context, this);
             ProductService = new ProductRepository(_context, this);
             SupplierService = new SupplierRepository(_context, this);
+            RoleService = new RoleRepository(_context, this);
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using ApplicationCore;
 using ApplicationCore.Models;
-using ApplicationService.UnitOfWork;
 using BusinessService.Generic;
-using BusinessService.IService;
+using BusinessService.Service;
+using BusinessService.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace BusinessService.Repository
 {
     public class CategoryRepository : GenericRepository<Category>, ICategoryService
     {
-        public CategoryRepository(PizzaStoreContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
+        public CategoryRepository(FoodyContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
         {
         }
     }

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ApplicationCore.Migrations
 {
-    [DbContext(typeof(PizzaStoreContext))]
+    [DbContext(typeof(FoodyContext))]
     [Migration("20230224062918_initdb")]
     partial class initdb
     {

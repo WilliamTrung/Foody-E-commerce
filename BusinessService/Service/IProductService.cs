@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessService.IService
+namespace BusinessService.Service
 {
     public interface IProductService : IGenericRepository<Product>
     {

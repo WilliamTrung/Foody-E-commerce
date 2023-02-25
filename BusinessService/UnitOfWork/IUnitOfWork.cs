@@ -1,11 +1,11 @@
-﻿using BusinessService.IService;
+﻿using BusinessService.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApplicationService.UnitOfWork
+namespace BusinessService.UnitOfWork
 {
     public interface IUnitOfWork
     {
@@ -15,5 +15,6 @@ namespace ApplicationService.UnitOfWork
         public IOrderService OrderService { get; }
         public IProductService ProductService { get; }
         public ISupplierService SupplierService { get; }
+        public IRoleService RoleService { get; }
     }
 }
