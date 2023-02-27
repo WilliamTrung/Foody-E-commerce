@@ -43,7 +43,7 @@ namespace BusinessService.Generic
         public virtual async Task<IEnumerable<TEntity>> Get(Expression<Func<TEntity, bool>>? expression = null, params string[] includeProperties)
         {
             IQueryable<TEntity>? query = _entities;
-            query = expression == null ? query : query.Where(expression);
+            query = expression == null ? query : query.Where(expression); 
             if (includeProperties != null)
             {
                 foreach (var property in includeProperties)

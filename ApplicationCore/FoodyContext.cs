@@ -30,7 +30,7 @@ namespace ApplicationCore
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("server=WILLIAMTRUNG\\MYSQL;Database=FoodyStore;User ID=sa;Password=123;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("server=.;Database=FoodyStore;User ID=sa;Password=123;Trusted_Connection=True;");
             }
         }
 
