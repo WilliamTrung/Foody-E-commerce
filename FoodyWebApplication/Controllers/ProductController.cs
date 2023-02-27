@@ -25,7 +25,7 @@ namespace FoodyWebApplication.Controllers
         // GET: Product
         public async Task<IActionResult> Index()
         {
-            var foodyContext = await _unitOfWork.ProductService.Get(expression: null, "Category,Supplier");
+            var foodyContext = await _unitOfWork.ProductService.Get(expression: null, "Category", "Supplier");
             return View(foodyContext.ToList());
         }
 
@@ -37,7 +37,7 @@ namespace FoodyWebApplication.Controllers
                 return NotFound();
             }
 
-            var account = await _unitOfWork.ProductService.GetFirst(c => c.ProductId == id, includeProperties: "Category,Supplier");
+            var account = await _unitOfWork.ProductService.GetFirst(expression: c => c.ProductId == id, "Category","Supplier");
             if (account == null)
             {
                 return NotFound();
@@ -83,7 +83,7 @@ namespace FoodyWebApplication.Controllers
                 return NotFound();
             }
 
-            var product = await _unitOfWork.ProductService.GetFirst(c => c.ProductId == id, includeProperties: "Category,Supplier");
+            var product = await _unitOfWork.ProductService.GetFirst(c => c.ProductId == id, "Category", "Supplier");
             if (product == null)
             {
                 return NotFound();
@@ -134,7 +134,7 @@ namespace FoodyWebApplication.Controllers
                 return NotFound();
             }
 
-            var product = await _unitOfWork.ProductService.GetFirst(p => p.ProductId == id, includeProperties: "Category,Supplier");
+            var product = await _unitOfWork.ProductService.GetFirst(p => p.ProductId == id, "Category", "Supplier");
             if (product == null)
             {
                 return NotFound();
@@ -148,7 +148,7 @@ namespace FoodyWebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _unitOfWork.ProductService.GetFirst(p => p.ProductId == id, includeProperties: "Category,Supplier");
+            var product = await _unitOfWork.ProductService.GetFirst(p => p.ProductId == id, "Category", "Supplier");
             if (product != null)
             {
                 await _unitOfWork.ProductService.Delete(product);
