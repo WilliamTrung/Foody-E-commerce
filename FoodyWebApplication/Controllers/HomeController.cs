@@ -23,11 +23,6 @@ namespace FoodyWebApplication.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
@@ -35,7 +30,8 @@ namespace FoodyWebApplication.Controllers
         }
         public async Task<IActionResult> LogOut()
         { 
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);    
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            Helper.SessionExtension.Logout(HttpContext.Session);
             return LocalRedirect("/");
         }
     }

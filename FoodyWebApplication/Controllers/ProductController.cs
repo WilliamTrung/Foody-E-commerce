@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FoodyWebApplication.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -37,7 +37,7 @@ namespace FoodyWebApplication.Controllers
                 return NotFound();
             }
 
-            var account = await _unitOfWork.ProductService.GetFirst(expression: c => c.ProductId == id, "Category","Supplier");
+            var account = await _unitOfWork.ProductService.GetFirst(expression: c => c.ProductId == id, "Category", "Supplier");
             if (account == null)
             {
                 return NotFound();
@@ -45,7 +45,7 @@ namespace FoodyWebApplication.Controllers
 
             return View(account);
         }
-
+        [Authorize(Roles = "Administrator,Seller")]
         // GET: Product/Create
         public IActionResult Create()
         {
@@ -55,7 +55,7 @@ namespace FoodyWebApplication.Controllers
             ViewData["SupplierId"] = new SelectList(suppliers, "SupplierId", "Address");
             return View();
         }
-
+        [Authorize(Roles = "Administrator,Seller")]
         // POST: Product/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -74,7 +74,7 @@ namespace FoodyWebApplication.Controllers
             ViewData["SupplierId"] = new SelectList(suppliers, "SupplierId", "Address");
             return View(product);
         }
-
+        [Authorize(Roles = "Administrator,Seller")]
         // GET: Product/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -94,7 +94,7 @@ namespace FoodyWebApplication.Controllers
             ViewData["SupplierId"] = new SelectList(suppliers, "SupplierId", "Address");
             return View(product);
         }
-
+        [Authorize(Roles = "Administrator,Seller")]
         // POST: Product/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -125,7 +125,7 @@ namespace FoodyWebApplication.Controllers
             ViewData["SupplierId"] = new SelectList(suppliers, "SupplierId", "Address");
             return View(product);
         }
-
+        [Authorize(Roles = "Administrator,Seller")]
         // GET: Product/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -142,7 +142,7 @@ namespace FoodyWebApplication.Controllers
 
             return View(product);
         }
-
+        [Authorize(Roles = "Administrator,Seller")]
         // POST: Product/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

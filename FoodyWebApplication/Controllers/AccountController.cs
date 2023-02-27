@@ -151,11 +151,10 @@ namespace FoodyWebApplication.Controllers
             return RedirectToAction(nameof(Index));
         }
         [AllowAnonymous]
-        public IActionResult Login(string ReturnUrl = "")
+        public IActionResult Login(string ReturnUrl = "Product/Index")
         {
-
             LoginModel objLoginModel = new LoginModel();
-            objLoginModel.ReturnUrl = ReturnUrl;
+            //objLoginModel.ReturnUrl = ReturnUrl;
             return View(objLoginModel);
         }
         [HttpPost]
@@ -182,6 +181,8 @@ namespace FoodyWebApplication.Controllers
                     {
                         IsPersistent = objLoginModel.RememberLogin
                     });
+                    Helper.SessionExtension.Set(HttpContext.Session, "login-user", user);
+                    //Account? userlog = Helper.SessionExtension.GetLoginUser(HttpContext.Session);
                     return LocalRedirect(objLoginModel.ReturnUrl);
                 }
                 else
