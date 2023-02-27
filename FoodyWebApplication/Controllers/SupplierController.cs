@@ -12,24 +12,24 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FoodyWebApplication.Controllers
 {
-    [Authorize(Roles = "Administrator")]
-    public class RoleController : Controller
+    [Authorize(Roles = "Administrator,Seller")]
+    public class SupplierController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public RoleController(IUnitOfWork unitOfWork)
+        public SupplierController(IUnitOfWork unitOfWork)
         {
-            _unitOfWork= unitOfWork;
+            _unitOfWork = unitOfWork;
         }
 
-        // GET: Role
+        // GET: Suppliers
         public async Task<IActionResult> Index()
         {
-            var list = await _unitOfWork.RoleService.Get();
-              return View(list);
+            var supplier = await _unitOfWork.SupplierService.Get();
+              return View(supplier);
         }
 
-        // GET: Role/Details/5
+        // GET: Suppliers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -37,37 +37,37 @@ namespace FoodyWebApplication.Controllers
                 return NotFound();
             }
 
-            var role = await _unitOfWork.RoleService.GetFirst(c => c.Id == id);
-            if (role == null)
+            var supplier = await _unitOfWork.SupplierService.GetFirst(s => s.SupplierId == id);
+            if (supplier == null)
             {
                 return NotFound();
             }
 
-            return View(role);
+            return View(supplier);
         }
 
-        // GET: Role/Create
+        // GET: Suppliers/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Role/Create
+        // POST: Suppliers/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Role role)
+        public async Task<IActionResult> Create([Bind("SupplierId,CompanyName,Address,Phone,IsDeleted")] Supplier supplier)
         {
             if (ModelState.IsValid)
             {
-                await _unitOfWork.RoleService.Add(role);
+                await _unitOfWork.SupplierService.Add(supplier);
                 return RedirectToAction(nameof(Index));
             }
-            return View(role);
+            return View(supplier);
         }
 
-        // GET: Role/Edit/5
+        // GET: Suppliers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -75,22 +75,22 @@ namespace FoodyWebApplication.Controllers
                 return NotFound();
             }
 
-            var role = await _unitOfWork.RoleService.GetFirst(c => c.Id == id);
-            if (role == null)
+            var supplier = await _unitOfWork.SupplierService.GetFirst(s => s.SupplierId == id);
+            if (supplier == null)
             {
                 return NotFound();
             }
-            return View(role);
+            return View(supplier);
         }
 
-        // POST: Role/Edit/5
+        // POST: Suppliers/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,IsDeleted")] Role role)
+        public async Task<IActionResult> Edit(int id, [Bind("SupplierId,CompanyName,Address,Phone,IsDeleted")] Supplier supplier)
         {
-            if (id != role.Id)
+            if (id != supplier.SupplierId)
             {
                 return NotFound();
             }
@@ -99,7 +99,7 @@ namespace FoodyWebApplication.Controllers
             {
                 try
                 {
-                    await _unitOfWork.RoleService.Update(role);
+                    await _unitOfWork.SupplierService.Update(supplier);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -107,10 +107,10 @@ namespace FoodyWebApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(role);
+            return View(supplier);
         }
 
-        // GET: Role/Delete/5
+        // GET: Suppliers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -118,25 +118,25 @@ namespace FoodyWebApplication.Controllers
                 return NotFound();
             }
 
-            var role = await _unitOfWork.RoleService.GetFirst(c => c.Id == id);
-            if (role == null)
+            var supplier = await _unitOfWork.SupplierService.GetFirst(s => s.SupplierId == id);
+            if (supplier == null)
             {
                 return NotFound();
             }
 
-            return View(role);
+            return View(supplier);
         }
 
-        // POST: Role/Delete/5
+        // POST: Suppliers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var role = await _unitOfWork.RoleService.GetFirst(c => c.Id == id);
-            if (role != null)
+            var supplier = await _unitOfWork.SupplierService.GetFirst(s => s.SupplierId == id);
+            if (supplier != null)
             {
-                await _unitOfWork.RoleService.Delete(role);
-            }            
+                await _unitOfWork.SupplierService.Delete(supplier);
+            }
             return RedirectToAction(nameof(Index));
         }
     }

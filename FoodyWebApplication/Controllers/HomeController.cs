@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FoodyWebApplication.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -21,11 +23,6 @@ namespace FoodyWebApplication.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
@@ -33,7 +30,8 @@ namespace FoodyWebApplication.Controllers
         }
         public async Task<IActionResult> LogOut()
         { 
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);    
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            Helper.SessionExtension.Logout(HttpContext.Session);
             return LocalRedirect("/");
         }
     }

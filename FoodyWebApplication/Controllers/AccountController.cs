@@ -24,7 +24,7 @@ namespace FoodyWebApplication.Controllers
         {
             _unitOfWork= unitOfWork;
         }
-
+        [Authorize(Roles ="Administrator")]
         // GET: Account
         public async Task<IActionResult> Index()
         {
@@ -48,7 +48,7 @@ namespace FoodyWebApplication.Controllers
 
             return View(account);
         }
-
+        [Authorize(Roles = "Administrator")]
         // GET: Account/Create
         public async Task<IActionResult> Create()
         {
@@ -56,7 +56,7 @@ namespace FoodyWebApplication.Controllers
             ViewData["RoleId"] = new SelectList(roles, "Id", "Name");
             return View();
         }
-
+        [Authorize(Roles = "Administrator")]
         // POST: Account/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -73,7 +73,7 @@ namespace FoodyWebApplication.Controllers
             ViewData["RoleId"] = new SelectList(roles, "Id", "Name", account.RoleId);
             return View(account);
         }
-
+        [Authorize(Roles = "Administrator")]
         // GET: Account/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -91,7 +91,7 @@ namespace FoodyWebApplication.Controllers
             ViewData["RoleId"] = new SelectList(roles, "Id", "Name", account.RoleId);
             return View(account);
         }
-
+        [Authorize(Roles = "Administrator")]
         // POST: Account/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -120,7 +120,7 @@ namespace FoodyWebApplication.Controllers
             ViewData["RoleId"] = new SelectList(roles, "Id", "Name", account.RoleId);
             return View(account);
         }
-
+        [Authorize(Roles = "Administrator")]
         // GET: Account/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -137,7 +137,7 @@ namespace FoodyWebApplication.Controllers
 
             return View(account);
         }
-
+        [Authorize(Roles = "Administrator")]
         // POST: Account/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -150,11 +150,11 @@ namespace FoodyWebApplication.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
-        public IActionResult Login(string ReturnUrl = "")
+        [AllowAnonymous]
+        public IActionResult Login(string ReturnUrl = "Product/Index")
         {
-
             LoginModel objLoginModel = new LoginModel();
-            objLoginModel.ReturnUrl = ReturnUrl;
+            //objLoginModel.ReturnUrl = ReturnUrl;
             return View(objLoginModel);
         }
         [HttpPost]
@@ -181,6 +181,8 @@ namespace FoodyWebApplication.Controllers
                     {
                         IsPersistent = objLoginModel.RememberLogin
                     });
+                    Helper.SessionExtension.Set(HttpContext.Session, "login-user", user);
+                    //Account? userlog = Helper.SessionExtension.GetLoginUser(HttpContext.Session);
                     return LocalRedirect(objLoginModel.ReturnUrl);
                 }
                 else
@@ -191,6 +193,9 @@ namespace FoodyWebApplication.Controllers
             }
             return View(objLoginModel);
         }
-
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }
