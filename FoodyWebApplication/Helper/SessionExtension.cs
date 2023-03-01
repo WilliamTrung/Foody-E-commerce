@@ -42,7 +42,8 @@ namespace FoodyWebApplication.Helper
         }
         public static bool Logout(this ISession session)
         {
-            Set<Account>(session, "login-user", null);
+            //Set<Account>(session, "login-user", null);
+            session.Clear();
             return true;
         }
         //public static Cart? GetCart(this ISession session)
