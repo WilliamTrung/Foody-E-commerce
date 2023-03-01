@@ -61,13 +61,22 @@ namespace FoodyWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice,ProductImage,IsDeleted")] Product product)
+        public async Task<IActionResult> Create([Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice")] Product product, IFormFile file)
         {
             if (ModelState.IsValid)
             {
+                var tail = "." + file.FileName.Split('.').Last();
+                var file_stored = "wwwroot" + "/" + "images" + "/" + product.ProductName + tail;
+                var file_save = "images" + "/" + product.ProductName + tail;
+                using (var filestream = new FileStream(file_stored, FileMode.Create))
+                {
+                    await file.CopyToAsync(filestream);
+                }
+                product.ProductImage = file_save;
                 await _unitOfWork.ProductService.Add(product);
                 return RedirectToAction(nameof(Index));
             }
+          
             var categories = _unitOfWork.CategoryService.Get().Result;
             var suppliers = _unitOfWork.SupplierService.Get().Result;
             ViewData["CategoryId"] = new SelectList(categories, "CategoryId", "CategoryName");
@@ -100,7 +109,7 @@ namespace FoodyWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice,ProductImage,IsDeleted")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice,ProductImage,IsDeleted")] Product product, IFormFile file)
         {
             if (id != product.ProductId)
             {
@@ -111,6 +120,14 @@ namespace FoodyWebApplication.Controllers
             {
                 try
                 {
+                    var tail = "." + file.FileName.Split('.').Last();
+                    var file_stored = "wwwroot" + "/" + "images" + "/" + product.ProductName + tail;
+                    var file_save = "images" + "/" + product.ProductName + tail;
+                    using (var filestream = new FileStream(file_stored, FileMode.Create))
+                    {
+                        await file.CopyToAsync(filestream);
+                    }
+                    product.ProductImage = file_save;
                     await _unitOfWork.ProductService.Update(product);
                 }
                 catch (DbUpdateConcurrencyException)
