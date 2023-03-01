@@ -22,5 +22,10 @@ namespace ApplicationCore.Models
         public virtual Account? Account { get; set; }
         public bool IsDeleted { get; set; } = false;
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = null!;
+
+        public static implicit operator List<object>(Order v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
