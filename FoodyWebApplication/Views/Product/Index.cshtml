@@ -49,7 +49,7 @@
                 @Html.DisplayFor(modelItem => item.UnitPrice)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ProductImage)
+                <img src="@item.ProductImage" style="width:100px;height:auto"/>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Category.CategoryName)
