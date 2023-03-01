@@ -64,6 +64,11 @@
                 <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                <form method="post" asp-controller="Cart" asp-route-id='@item.ProductId' asp-action="AddToCart">
+                                <input type="hidden" name="id" value="@item.ProductId"/>
+                                <input type="number" min="1" name="quantity" value="0"/>
+                                    <button  class="btn btn-primary">Add to Cart</button>
+                            </form>
             </td>
         </tr>
 }

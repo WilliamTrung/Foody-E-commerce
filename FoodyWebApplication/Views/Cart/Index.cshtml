@@ -1,0 +1,86 @@
+﻿@page
+@model FoodyWebApplication.Models.CartModel
+@{
+}
+@using ApplicationCore.Models
+@using Microsoft.AspNetCore.Http
+@using FoodyWebApplication.Helper
+@inject IHttpContextAccessor context
+@{
+    CartModel cart = SessionExtension.GetCart(context.HttpContext.Session);
+    string total =SessionExtension.Get<string>(context.HttpContext.Session, "GioHangTotal");
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                ProductName
+            </th>
+            <th>
+               QuantityPerUnit
+            </th>
+            <th>
+               UnitPrice
+            </th>
+            <th>
+               ProductImage
+            </th>
+            <th>
+               Category
+            </th>
+            <th>
+                Supplier
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in cart.ProductList)
+        {
+            <tr>
+                <form method="post" asp-controller="Cart" asp-action="UpdateCart">
+                <td>
+                        @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    <input type="number" name="quantity" min="1" value="@item.QuantityPerUnit" />
+                </td>
+                <td>
+                        @Html.DisplayFor(modelItem => item.UnitPrice)
+                </td>
+                <td>
+                    <img src="~/@Url.Content(item.ProductImage)" alt="@Url.Content(item.ProductImage)" />
+                </td>
+                <td>
+                        @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                </td>
+                <td>
+                        @Html.DisplayFor(modelItem => item.Supplier.CompanyName)
+                </td>
+                <td>
+                    <button name="remove" value="@item.ProductId">Remove</button>
+                    <button name="update" value="@item.ProductId">Update</button>
+                </td>
+                </form>
+
+            </tr>
+        }
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+                Total: @total
+                
+            </td>
+        </tr>
+    </tbody>
+    <form method="post">
+        <button value="Check out">Check out</button>
+    </form>
+</table>
+
+

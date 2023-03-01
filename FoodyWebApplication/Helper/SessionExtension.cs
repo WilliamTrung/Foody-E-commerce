@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Models;
 using BusinessService;
+using FoodyWebApplication.Models;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json.Linq;
@@ -11,7 +12,9 @@ namespace FoodyWebApplication.Helper
     {
         public static void Set<T>(this ISession session, string key, T? value)
         {
-            string json = JsonSerializer.Serialize(value);
+            JsonSerializerOptions option = new JsonSerializerOptions();
+            option.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+            string json = JsonSerializer.Serialize(value, options: option);
             session.SetString(key, json);
         }
 
@@ -45,17 +48,17 @@ namespace FoodyWebApplication.Helper
             Set<Account>(session, "login-user", null);
             return true;
         }
-        //public static Cart? GetCart(this ISession session)
-        //{
-        //    var value = session.GetString("cart");
-        //    if (value != null)
-        //    {
-        //        return JsonSerializer.Deserialize<Cart>(value);
-        //    }
-        //    else
-        //    {
-        //        return null;
-        //    }
-        //}
+        public static CartModel? GetCart(this ISession session)
+        {
+            var value = session.GetString("GioHang");
+            if (value != null)
+            {
+                return JsonSerializer.Deserialize<CartModel>(value);
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }
