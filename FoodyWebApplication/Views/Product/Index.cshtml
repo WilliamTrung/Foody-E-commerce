@@ -9,7 +9,7 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table class="table ">
     <thead>
         <tr>
             <th>
@@ -30,7 +30,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Supplier)
             </th>
-            <th>
+            <th style="text-align: center;">
                 @Html.DisplayNameFor(model => model.IsDeleted)
             </th>
             <th></th>
@@ -57,7 +57,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Supplier.Address)
             </td>
-            <td>
+            <td style="text-align: center;">
                 @Html.DisplayFor(modelItem => item.IsDeleted)
             </td>
             <td>
