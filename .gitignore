@@ -375,3 +375,4 @@ FodyWeavers.xsd
 /ApplicationCore/obj
 /BusinessService/obj
 /FoodyWebApplication/obj
+/FoodyWebApplication/appsettings.json
