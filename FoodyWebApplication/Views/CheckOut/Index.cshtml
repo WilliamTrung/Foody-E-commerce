@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<ApplicationCore.Models.Order>
-
+@using FoodyWebApplication.Helper
 @{
     ViewData["Title"] = "Index";
 }
@@ -29,7 +29,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Account)
             </th>
-            <th>
+            <th style="text-align: center;">
                 @Html.DisplayNameFor(model => model.IsDeleted)
             </th>
             <th></th>
@@ -57,15 +57,29 @@
                 @Html.DisplayFor(modelItem => item.TotalPrice)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Account.Address)
+                @Html.DisplayFor(modelItem => item.Account.Username)
             </td>
-            <td>
+            <td style="text-align: center;">
                 @Html.DisplayFor(modelItem => item.IsDeleted)
             </td>
+            @{
+                    var loginuser1 = SessionExtension.GetLoginUser(Context.Session);
+                    if (loginuser1 != null)
+                    {
+                        if (loginuser1.RoleId == 1 || loginuser1.RoleId == 3)
+                        {
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.OrderId">Edit</a> |
+                                
+                                <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
+                            </td>
+                        }
+                    }
+                }
             <td>
-                <a asp-action="Edit" asp-route-id="@item.OrderId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.OrderId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
+                
+                <a asp-action="Details" asp-route-id="@item.OrderId">Details</a> 
+             
             </td>
         </tr>
 }
