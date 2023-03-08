@@ -24,8 +24,17 @@ namespace FoodyWebApplication.Controllers
         // GET: Order
         public async Task<IActionResult> Index()
         {
-            var foodyContext = await _unitOfWork.OrderService.Get(expression: null, includeProperties: "Account");
-            return View(foodyContext);
+            var user = HttpContext.Session.GetLoginUser();
+            if (user != null)
+            {
+                var foodyContext = await _unitOfWork.OrderService.Get(expression: c => c.AccountId == user.AccountId, includeProperties: "Account");
+                return View(foodyContext);
+            }
+            else
+            {
+                return RedirectToPage("/Account/Login");
+            }
+
         }
 
         // GET: Order/Details/5
@@ -36,13 +45,23 @@ namespace FoodyWebApplication.Controllers
                 return NotFound();
             }
 
-            var order = await _unitOfWork.OrderService.GetFirst(c => c.OrderId == id, "Account");
+            var user = HttpContext.Session.GetLoginUser();
+            if (user != null)
+            {
+
+                var order = await _unitOfWork.OrderService.GetFirst(c => c.OrderId == id && user.AccountId == c.AccountId, "Account");
             if (order == null)
             {
                 return NotFound();
             }
 
             return View(order);
+
+            }
+            else
+            {
+                return RedirectToPage("/Account/Login");
+            }
         }
 
         // GET: Order/Create
