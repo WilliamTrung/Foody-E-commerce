@@ -22,9 +22,9 @@ namespace FoodyWebApplication.Controllers
 
         public AccountController(IUnitOfWork unitOfWork)
         {
-            _unitOfWork= unitOfWork;
+            _unitOfWork = unitOfWork;
         }
-        [Authorize(Roles ="Administrator")]
+        [Authorize(Roles = "Administrator")]
         // GET: Account
         public async Task<IActionResult> Index()
         {
@@ -39,7 +39,7 @@ namespace FoodyWebApplication.Controllers
             {
                 return NotFound();
             }
-            
+
             var account = await _unitOfWork.AccountService.GetFirst(c => c.AccountId == id, "Role");
             if (account == null)
             {
@@ -177,10 +177,14 @@ namespace FoodyWebApplication.Controllers
                     //Initialize a new instance of the ClaimsPrincipal with ClaimsIdentity    
                     var principal = new ClaimsPrincipal(identity);
                     //SignInAsync is a Extension method for Sign in a principal for the specified scheme.    
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties()
-                    {
-                        IsPersistent = objLoginModel.RememberLogin
-                    });
+                    await HttpContext.SignInAsync(
+                                CookieAuthenticationDefaults.AuthenticationScheme,
+                                new ClaimsPrincipal(identity),
+                                new AuthenticationProperties
+                                {
+                                    IsPersistent = objLoginModel.RememberLogin,
+                                    ExpiresUtc = DateTime.UtcNow.AddMinutes(20)
+                                });
                     Helper.SessionExtension.Set(HttpContext.Session, "login-user", user);
                     //Account? userlog = Helper.SessionExtension.GetLoginUser(HttpContext.Session);
                     return LocalRedirect(objLoginModel.ReturnUrl);
@@ -192,6 +196,12 @@ namespace FoodyWebApplication.Controllers
                 }
             }
             return View(objLoginModel);
+        }
+        public async Task<IActionResult> LogOut()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            Helper.SessionExtension.Logout(HttpContext.Session);
+            return LocalRedirect("/");
         }
         public IActionResult AccessDenied()
         {

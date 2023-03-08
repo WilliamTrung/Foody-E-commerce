@@ -54,7 +54,7 @@
                                     <li class="nav-item">
                                         <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Product view</a>
                                     </li>
-                                     <li class="nav-item">
+                                    <li class="nav-item">
                                         <a class="nav-link text-dark" asp-area="" asp-controller="Cart" asp-action="Index">Cart view</a>
                                     </li>
                                     <li class="nav-item">
@@ -72,7 +72,13 @@
                                     <li class="nav-item">
                                         <a class="nav-link text-dark" asp-area="" asp-controller="Supplier" asp-action="Index">Supplier management</a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="CheckOrder" asp-action="Index">Order management</a>
+                                    </li>
                                 }
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Details" asp-route-id="@loginuser.AccountId">@loginuser.Username</a>
+                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>
                                 </li>
@@ -91,7 +97,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - FoodyWebApplication - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2023 - FoodyWebApplication
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
