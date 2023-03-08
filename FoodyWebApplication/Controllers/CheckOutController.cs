@@ -97,13 +97,18 @@ namespace FoodyWebApplication.Controllers
                         };
                         order.OrderDetails.Add(orderDetail);
                     }
+
+                }else if(cart.ProductList.Count == 0)
+                {
+                    return RedirectToAction("Index","Product");
                 }
+                
                 order.IsDeleted = false;
                 //end
                 return View(order);
             } else
             {
-                return RedirectToPage("/Account/Login");
+                return RedirectToPage("Account/Login");
             }
 
             

@@ -59,8 +59,8 @@
                         @Html.DisplayFor(modelItem => item.Supplier.CompanyName)
                 </td>
                 <td>
-                    <button name="remove" value="@item.ProductId">Remove</button>
-                    <button name="update" value="@item.ProductId">Update</button>
+                    <button style="font-size: 16px;" class="btn btn-primary btn-lg active" name="remove" value="@item.ProductId">Remove</button>
+                    <button style="font-size: 16px;" class="btn btn-primary btn-lg active"  name="update" value="@item.ProductId">Update</button>
                 </td>
                 </form>
 
@@ -74,13 +74,14 @@
             <td></td>
             <td>
                 Total: @total
-                
+                <form method="get" asp-controller="CheckOut" asp-action="Create">
+         
+        <button class="btn btn-primary btn-lg active" value="Check out"><a class="btn btn-primary btn-lg active" role="button" >Checkout</a></button>
+    </form>
             </td>
         </tr>
     </tbody>
-    <form method="get" asp-controller="CheckOut" asp-action="Create">
-        <button value="Check out">Check out</button>
-    </form>
+    
 </table>
 
 
