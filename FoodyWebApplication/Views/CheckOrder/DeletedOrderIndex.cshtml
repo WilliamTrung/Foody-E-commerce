@@ -4,9 +4,9 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Deleted Orders</h1>
 
-<a asp-action="DeletedOrderIndex">View Deleted Orders</a>
+<a asp-action="Index">Back to Orders</a>
 
 <table class="table">
     <thead>
@@ -37,7 +37,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-    if (item.IsDeleted == false)
+    if (item.IsDeleted == true)
         {
         <tr>
             <td>
