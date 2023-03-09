@@ -7,36 +7,35 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ApplicationCore;
 using ApplicationCore.Models;
+using BusinessService.UnitOfWork;
 
 namespace FoodyWebApplication.Controllers
 {
     public class CheckOrderController : Controller
     {
-        private readonly FoodyContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CheckOrderController(FoodyContext context)
+        public CheckOrderController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: CheckOrder
         public async Task<IActionResult> Index()
         {
-            var foodyContext = _context.Orders.Include(o => o.Account);
-            return View(await foodyContext.ToListAsync());
+            var foodyContext = await _unitOfWork.OrderService.Get();
+            return View(foodyContext);
         }
 
         // GET: CheckOrder/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Orders == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var order = await _context.Orders
-                .Include(o => o.Account)
-                .FirstOrDefaultAsync(m => m.OrderId == id);
+            var order = await _unitOfWork.OrderService.GetFirst(c => c.OrderId == id);
             if (order == null)
             {
                 return NotFound();
@@ -45,124 +44,26 @@ namespace FoodyWebApplication.Controllers
             return View(order);
         }
 
-        // GET: CheckOrder/Create
-        public IActionResult Create()
+        public async Task<IActionResult> DeletedOrderIndex()
         {
-            ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "Address");
-            return View();
+            var foodyContext = await _unitOfWork.OrderService.Get();
+            return View(foodyContext);
         }
 
-        // POST: CheckOrder/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderId,AccountId,OrderDate,RequiredDate,ShippedDate,Freight,ShipAddress,TotalPrice,IsDeleted")] Order order)
+        public async Task<IActionResult> DeletedOrderDetails(int? id)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(order);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "Address", order.AccountId);
-            return View(order);
-        }
-
-        // GET: CheckOrder/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Orders == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-            ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "Address", order.AccountId);
-            return View(order);
-        }
-
-        // POST: CheckOrder/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("OrderId,AccountId,OrderDate,RequiredDate,ShippedDate,Freight,ShipAddress,TotalPrice,IsDeleted")] Order order)
-        {
-            if (id != order.OrderId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(order);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!OrderExists(order.OrderId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["AccountId"] = new SelectList(_context.Accounts, "AccountId", "Address", order.AccountId);
-            return View(order);
-        }
-
-        // GET: CheckOrder/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Orders == null)
-            {
-                return NotFound();
-            }
-
-            var order = await _context.Orders
-                .Include(o => o.Account)
-                .FirstOrDefaultAsync(m => m.OrderId == id);
+            var order = await _unitOfWork.OrderService.GetFirst(c => c.OrderId == id);
             if (order == null)
             {
                 return NotFound();
             }
 
             return View(order);
-        }
-
-        // POST: CheckOrder/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Orders == null)
-            {
-                return Problem("Entity set 'FoodyContext.Orders'  is null.");
-            }
-            var order = await _context.Orders.FindAsync(id);
-            if (order != null)
-            {
-                _context.Orders.Remove(order);
-            }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool OrderExists(int id)
-        {
-          return _context.Orders.Any(e => e.OrderId == id);
         }
     }
 }
