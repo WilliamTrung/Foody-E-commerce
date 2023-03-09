@@ -39,13 +39,19 @@ namespace FoodyWebApplication.Controllers
         public IActionResult Index()
         {
             CartModel cart = SessionExtension.GetCart(HttpContext.Session);
-            foreach (var product in cart.ProductList)
+            
+            if (cart == null)
             {
-                Total += (product.QuantityPerUnit * product.UnitPrice);
-                product.UnitPrice = Math.Round(product.UnitPrice, 0);
+                cart = new CartModel();
+                foreach (var product in cart.ProductList)
+                {
+                    Total += (product.QuantityPerUnit * product.UnitPrice);
+                    product.UnitPrice = Math.Round(product.UnitPrice, 0);
+                }
+                Total = Math.Round(Total, 0);
+                cart.Total = Total;
             }
-            Total = Math.Round(Total, 0);
-            cart.Total = Total;
+            HttpContext.Session.Set<CartModel>("GioHang", cart);
             HttpContext.Session.Set<string>("GioHangTotal", cart.Total.ToString());
             return View("Index");
 

@@ -1,10 +1,10 @@
 ﻿@model ApplicationCore.Models.Account
-
+@using FoodyWebApplication.Helper
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Profile Details";
 }
 
-<h1>Details</h1>
+<h1>Your Profile</h1>
 
 <div>
     <h4>Account</h4>
@@ -48,7 +48,17 @@
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.AccountId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+   @{
+                    var loginuser1 = SessionExtension.GetLoginUser(Context.Session);
+                    if (loginuser1 != null)
+                    {
+                        if (loginuser1.RoleId == 1 || loginuser1.RoleId == 3)
+                        {
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@Model?.AccountId">Edit</a> 
+                                 <a class="btn btn-primary btn-lg active" role="button" aria-pressed="true" asp-action="Index">Back to  Account List</a>|
+                            </td>
+                        }
+                    }
+                }
+
