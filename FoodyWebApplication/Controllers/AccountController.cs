@@ -31,7 +31,7 @@ namespace FoodyWebApplication.Controllers
             var foodyContext = await _unitOfWork.AccountService.Get(includeProperties: "Role");
             return View(foodyContext);
         }
-
+        [Authorize]
         // GET: Account/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -48,7 +48,6 @@ namespace FoodyWebApplication.Controllers
 
             return View(account);
         }
-        [Authorize(Roles = "Administrator")]
         // GET: Account/Create
         public async Task<IActionResult> Create()
         {
@@ -56,7 +55,6 @@ namespace FoodyWebApplication.Controllers
             ViewData["RoleId"] = new SelectList(roles, "Id", "Name");
             return View();
         }
-        [Authorize(Roles = "Administrator")]
         // POST: Account/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.

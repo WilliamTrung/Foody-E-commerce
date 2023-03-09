@@ -21,7 +21,7 @@ namespace ApplicationCore.Models
         public string Address { get; set; } = null!;
         
         public string Phone { get; set; } = null!;
-        public virtual Role Role { get; set; } = null!;
+        public virtual Role? Role { get; set; } = null!;
 
         public virtual ICollection<Order>? Orders { get; set; }
         public bool IsDeleted { get; set; } = false;
