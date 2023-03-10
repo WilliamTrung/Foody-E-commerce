@@ -111,11 +111,6 @@ namespace FoodyWebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice,ProductImage,IsDeleted")] Product product, IFormFile file)
         {
-            if (id != product.ProductId)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try

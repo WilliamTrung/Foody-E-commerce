@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FoodyWebApplication.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator,Seller")]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
