@@ -10,7 +10,8 @@ namespace FoodyWebApplication.Models
         }
         
         public int AccountId { get; set; }
+        public decimal Total { get; set; }
         public List<Product> ProductList { get; set; }
-        public decimal Total;
+        
     }
 }

@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Index";
+    var loginuser = SessionExtension.GetLoginUser(Context.Session);
 }
 
 <h1>Index</h1>
@@ -28,9 +29,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.Supplier)
             </th>
-            <th style="text-align: center;">
-                @Html.DisplayNameFor(model => model.IsDeleted)
-            </th>
+            @if (loginuser == null || loginuser.RoleId != 2)
+            {
+                <th style="text-align: center;">
+                    @Html.DisplayNameFor(model => model.IsDeleted)
+                </th>
+            }
             <th></th>
         </tr>
     </thead>
@@ -56,35 +60,47 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Supplier.Address)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsDeleted)
-                </td>
+
                 @{
-                    var loginuser1 = SessionExtension.GetLoginUser(Context.Session);
-                    if (loginuser1 != null)
+                    if (loginuser != null)
                     {
-                        if (loginuser1.RoleId == 1 || loginuser1.RoleId == 3)
+                        if (item.IsDeleted)
                         {
+                            <td class="text-center">
+                                <label><i class="fa-solid fa-trash"></i></label>
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                        if (loginuser.RoleId == 1 || loginuser.RoleId == 3)
+                        {
+                            <td></td>
                             <td>
                                 <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
                                 <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
                                 <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
                             </td>
                         }
+                        else
+                        {
+                            <td>
+                                <form method="post" asp-controller="Cart" asp-route-id='@item.ProductId' asp-action="AddToCart">
+                                    <input type="hidden" name="id" value="@item.ProductId" />
+                                    <input type="number" min="1" max="@item.QuantityPerUnit" name="quantity" value="0" />
+                                    <button class="btn btn-primary">Add to Cart</button>
+                                </form>
+                            </td>
+                        }
                     }
                 }
-                <td>
-                    <form method="post" asp-controller="Cart" asp-route-id='@item.ProductId' asp-action="AddToCart">
-                        <input type="hidden" name="id" value="@item.ProductId" />
-                        <input type="number" min="1" name="quantity" value="0" />
-                        <button class="btn btn-primary">Add to Cart</button>
-                    </form>
-                </td>
+
             </tr>
         }
     </tbody>
     @{
-        var loginuser = SessionExtension.GetLoginUser(Context.Session);
+
         if (loginuser != null)
         {
             if (loginuser.RoleId == 1 || loginuser.RoleId == 3)

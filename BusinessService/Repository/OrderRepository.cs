@@ -27,5 +27,37 @@ namespace BusinessService.Repository
             }
             return list;
         }
+        public override Task Add(Order entity)
+        {
+
+            entity.OrderDate = DateTime.Now;
+            entity.RequiredDate = DateTime.Now.AddDays(10);
+            entity.ShippedDate = DateTime.Now.AddDays(7);
+            return base.Add(entity);
+        }
+        public override async Task Delete(Order entity)
+        {
+            var today = DateTime.Today;
+            bool canDelete = true;
+            if(entity.ShippedDate != null)
+            {
+                //shipped date is 3 day later from today
+                if (!(entity.ShippedDate.Value.Date.CompareTo(today) >= 3)) { 
+                    canDelete= false;
+                }
+            }
+            //incase shippeddate is unknown
+            if(entity.RequiredDate.Date.CompareTo(today) >= 3)
+            {                
+                canDelete= false;
+            }
+            if(canDelete)
+            {
+                await base.Delete(entity);
+            } else
+            {
+                throw new Exception("OVERDUE");
+            }
+        }
     }
 }

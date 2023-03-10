@@ -10,13 +10,16 @@ namespace ApplicationCore.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ProductId { get; set; }
+        [Required]
         public string ProductName { get; set; } = null!;
         [ForeignKey(nameof(Supplier))]
         public int? SupplierId { get; set; }
         [ForeignKey(nameof(Category))]
         public int? CategoryId { get; set; }
+        [Range(0, int.MaxValue,ErrorMessage = "Số lượng không được nhỏ hơn 0!")]
         public int QuantityPerUnit { get; set; }
         [Column(TypeName = "money")]
+        [Range(0, int.MaxValue, ErrorMessage = "Giá tiền không được nhỏ hơn 0!")]
         public decimal UnitPrice { get; set; }
         public string? ProductImage { get; set; }
 

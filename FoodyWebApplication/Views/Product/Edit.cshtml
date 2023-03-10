@@ -44,8 +44,8 @@
                 <span asp-validation-for="ProductImage" class="text-danger"></span>
             </div>*@
             <div class="form-group">
-                <label name="file" class="control-label"></label>
-                <input type="file" name="file" class="form-control" required/>
+            <label for="file" class="control-label"></label>
+                <input type="file" name="file" class="form-control"/>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
@@ -53,6 +53,8 @@
                 </label>
             </div>
             <div class="form-group">
+                <input type="hidden" name="id" value="@Model.ProductId"/>
+                <input type="hidden" name="oldPic" value="@Model.ProductImage" />
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>

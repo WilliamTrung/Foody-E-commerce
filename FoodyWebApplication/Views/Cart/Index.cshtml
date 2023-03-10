@@ -8,9 +8,9 @@
 @inject IHttpContextAccessor context
 @{
     CartModel cart = SessionExtension.GetCart(context.HttpContext.Session);
-    string total =SessionExtension.Get<string>(context.HttpContext.Session, "GioHangTotal");
 }
 
+<label class="text-danger">@TempData["Message"]</label>
 <table class="table">
     <thead>
         <tr>
@@ -44,7 +44,7 @@
                         @Html.DisplayFor(modelItem => item.ProductName)
                 </td>
                 <td>
-                    <input type="number" name="quantity" min="1" value="@item.QuantityPerUnit" />
+                    <input type="number" name="quantity" min="1" value="@item.QuantityPerUnit" />                    
                 </td>
                 <td>
                         @Html.DisplayFor(modelItem => item.UnitPrice)
@@ -73,7 +73,7 @@
             <td></td>
             <td></td>
             <td>
-                Total: @total
+                Total: @cart.Total
                 <form method="get" asp-controller="CheckOut" asp-action="Create">
          
         <button class="btn btn-primary btn-lg active" value="Check out"><a class="btn btn-primary btn-lg active" role="button" >Checkout</a></button>

@@ -14,7 +14,7 @@ namespace FoodyWebApplication.Helper
         {
             JsonSerializerOptions option = new JsonSerializerOptions();
             option.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-            string json = JsonSerializer.Serialize(value, options: option);
+            string json = JsonSerializer.Serialize(value, option);
             session.SetString(key, json);
         }
 

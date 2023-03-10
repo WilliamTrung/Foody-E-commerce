@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using FoodyWebApplication.Helper;
 
 namespace FoodyWebApplication.Controllers
 {
@@ -89,34 +90,55 @@ namespace FoodyWebApplication.Controllers
             ViewData["RoleId"] = new SelectList(roles, "Id", "Name", account.RoleId);
             return View(account);
         }
-        [Authorize(Roles = "Administrator")]
+        [Authorize]
         // POST: Account/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AccountId,Username,RoleId,Password,Address,Phone,IsDeleted")] Account account)
+        public async Task<IActionResult> Edit([Bind("AccountId,Username,RoleId,Password,Address,Phone,IsDeleted")] Account account)
         {
-            if (id != account.AccountId)
-            {
-                return NotFound();
-            }
 
-            if (ModelState.IsValid)
+            var loginuser = SessionExtension.GetLoginUser(HttpContext.Session);
+            string action = string.Empty;
+            bool check = true;
+            if (loginuser != null)
             {
-                try
+                if(loginuser.RoleId == 1)
                 {
-                    await _unitOfWork.AccountService.Update(account);
-                }
-                catch (DbUpdateConcurrencyException)
+                    //is admin
+                    action = "Index";
+                } else if(loginuser.AccountId == account.AccountId)
                 {
-                    return NotFound();
+                    action = "Details";
+                } else
+                {
+                    check = false;
                 }
-                return RedirectToAction(nameof(Index));
             }
-            var roles = await _unitOfWork.RoleService.Get();
-            ViewData["RoleId"] = new SelectList(roles, "Id", "Name", account.RoleId);
-            return View(account);
+            if (check)
+            {
+                ModelState.Remove("IsDeleted");
+                if (ModelState.IsValid)
+                {
+                    try
+                    {
+                        await _unitOfWork.AccountService.Update(account);
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        return NotFound();
+                    }
+                    return RedirectToAction(action, new { id = account.AccountId });
+                }
+                var roles = await _unitOfWork.RoleService.Get();
+                ViewData["RoleId"] = new SelectList(roles, "Id", "Name", account.RoleId);
+                return RedirectToAction(action, new { id = account.AccountId });
+            } else
+            {
+                return RedirectToAction("Logout", "Home");
+            }
+            
         }
         [Authorize(Roles = "Administrator")]
         // GET: Account/Delete/5

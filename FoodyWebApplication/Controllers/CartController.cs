@@ -18,7 +18,7 @@ namespace FoodyWebApplication.Controllers
     public class CartController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-       
+
         public decimal Total { get; set; } = 0;
         public CartController(IUnitOfWork unitOfWork)
         {
@@ -29,73 +29,88 @@ namespace FoodyWebApplication.Controllers
             get
             {
                 var data = HttpContext.Session.Get<CartModel>("GioHang");
-                if(data == null)
+                if (data == null)
                 {
-                   data = new CartModel();
+                    data = new CartModel();
                 }
                 return data;
             }
         }
         public IActionResult Index()
         {
-            CartModel cart = SessionExtension.GetCart(HttpContext.Session);
-            
+            CartModel? cart = SessionExtension.GetCart(HttpContext.Session);
             if (cart == null)
             {
                 cart = new CartModel();
-                foreach (var product in cart.ProductList)
-                {
-                    Total += (product.QuantityPerUnit * product.UnitPrice);
-                    product.UnitPrice = Math.Round(product.UnitPrice, 0);
-                }
-                Total = Math.Round(Total, 0);
-                cart.Total = Total;
             }
-            HttpContext.Session.Set<CartModel>("GioHang", cart);
-            HttpContext.Session.Set<string>("GioHangTotal", cart.Total.ToString());
+
+            foreach (var product in cart.ProductList)
+            {
+                Total += (product.QuantityPerUnit * product.UnitPrice);
+                product.UnitPrice = Math.Round(product.UnitPrice, 0);
+            }
+            Total = Math.Round(Total, 0);
+            cart.Total = Total;
+        
+            HttpContext.Session.Set("GioHang", cart);;
             return View("Index");
 
         }
-        public async Task<IActionResult> AddToCartAsync(int id,int quantity) 
+        public async Task<IActionResult> AddToCartAsync(int id, int quantity)
         {
             CartModel cart = Carts;
             var product = await _unitOfWork.ProductService.GetFirst(p => p.ProductId == id, "Category", "Supplier");
-            if(product != null)
+            if (product != null)
             {
-                AddToCart(cart,product, quantity);
-            }   
+                AddToCart(cart, product, quantity);
+            }
             HttpContext.Session.Set("GioHang", cart);
             return RedirectToAction("Index");
-        }  
-        public IActionResult UpdateCart(int? remove, int? update, int?  quantity)
+        }
+        public async Task<IActionResult> UpdateCart(int? remove, int? update, int? quantity)
         {
             if (remove == null && update != null)
             {
                 //update
                 var cart = SessionExtension.GetCart(HttpContext.Session);
                 //adjust quantity
-                var find = cart.ProductList.FirstOrDefault(p => p.ProductId == update);
-                if (find != null)
+                if (cart != null)
                 {
-                    find.QuantityPerUnit = (int)quantity;
+                    var find = cart.ProductList.FirstOrDefault(p => p.ProductId == update);
+                    
+                    if (find != null && quantity != null)
+                    {
+                        var find_db = await _unitOfWork.ProductService.GetFirst(c => c.ProductId == find.ProductId);
+                        if(find_db != null)
+                            AddToCart(cart, find_db, find.QuantityPerUnit);
+                    }
+                }
+                else
+                {
+                    cart = new CartModel();
                 }
                 HttpContext.Session.Set("GioHang", cart);
             }
             else if (update == null && remove != null)
             {
                 var cart = SessionExtension.GetCart(HttpContext.Session);
+                if (cart == null)
+                {
+                    cart = new CartModel();
+                }
                 var products = cart.ProductList.Where(p => p.ProductId == remove);
-                var product = products.First();
-                cart.ProductList.Remove(product);
+                var product = products.FirstOrDefault();
+                if (product != null)
+                    cart.ProductList.Remove(product);
                 HttpContext.Session.Set("GioHang", cart);
             }
             else
             {
                 //check out
                 var cart = SessionExtension.GetCart(HttpContext.Session);
-                if (cart != null  && cart.ProductList != null && cart.ProductList.Count() > 0)
+                if (cart != null && cart.ProductList != null && cart.ProductList.Count() > 0)
                 {
-                   // var product = await _unitOfWork.ProductService.GetFirst(p => p.ProductId == id, "Category", "Supplier");
+                    // var product = await _unitOfWork.ProductService.GetFirst(p => p.ProductId == id, "Category", "Supplier");
                     cart = new CartModel();
                     HttpContext.Session.Set("GioHang", cart);
                     return RedirectToPage("/Customer/Orders/Index");
@@ -104,13 +119,14 @@ namespace FoodyWebApplication.Controllers
             }
             return Index();
         }
-        private async void AddToCart(CartModel cart, Product product, int quantity)
+        private void AddToCart(CartModel cart, Product product, int quantity)
         {
-                if (quantity > 0) // chưa có
+            if (quantity > 0) // chưa có
             {
                 var find = cart.ProductList.FirstOrDefault(p => p.ProductId == product.ProductId);
                 //check quantity of product vs max quantity in product_check
-                bool checkQuantity = product.QuantityPerUnit < quantity;
+                var current_quantity = quantity + (find == null ? 0 : find.QuantityPerUnit);
+                bool checkQuantity = product.QuantityPerUnit >= current_quantity;
                 //end check
                 if (checkQuantity)
                 {
@@ -123,15 +139,15 @@ namespace FoodyWebApplication.Controllers
                         product.QuantityPerUnit = quantity;
                         cart.ProductList.Add(product);
                     }
+                } else
+                {
+                    string error = "Exceed maxinum quantity!";
+                    TempData["Message"] = error;
                 }
-                
+
             }
-
-
-
-
         }
 
-        }
     }
+}
 
