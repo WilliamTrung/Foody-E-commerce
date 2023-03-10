@@ -9,6 +9,7 @@ using ApplicationCore;
 using ApplicationCore.Models;
 using BusinessService.UnitOfWork;
 using FoodyWebApplication.Helper;
+using FoodyWebApplication.Models;
 
 namespace FoodyWebApplication.Controllers
 {
@@ -69,7 +70,7 @@ namespace FoodyWebApplication.Controllers
         {
             var order = new Order();
             var user = HttpContext.Session.GetLoginUser();
-            if(user != null)
+            if (user != null)
             {
                 //get cart from session
                 //pass data from cart to order
@@ -79,10 +80,9 @@ namespace FoodyWebApplication.Controllers
                 if (cart != null && cart.ProductList.Count > 0)
                 {
                     order.OrderDate = DateTime.Now;
-                    order.RequiredDate = DateTime.Now.AddDays(7);
-                    order.ShippedDate = DateTime.Now.AddDays(14);
-                    string total = SessionExtension.Get<string>(HttpContext.Session, "GioHangTotal");
-                    order.TotalPrice = Decimal.Parse(total);
+                    order.RequiredDate = DateTime.Now.AddDays(10);
+                    order.ShippedDate = DateTime.Now.AddDays(7);
+                    order.TotalPrice = cart.Total; ;
                     order.AccountId = user.AccountId;
                     order.Account = user;
                     order.OrderDetails = new List<OrderDetail>();
@@ -97,21 +97,23 @@ namespace FoodyWebApplication.Controllers
                         };
                         order.OrderDetails.Add(orderDetail);
                     }
-
-                }else if(cart.ProductList.Count == 0)
-                {
-                    return RedirectToAction("Index","Product");
+                    cart = new CartModel();
+                    SessionExtension.Set<CartModel>(HttpContext.Session, "GioHang", cart);
+                    return RedirectToAction("Index", "Product");
                 }
-                
-                order.IsDeleted = false;
-                //end
-                return View(order);
+                else if (cart != null && cart.ProductList.Count == 0)
+                {
+                    return RedirectToAction("Index", "Product");
+                }
+
+
+                    order.IsDeleted = false;
+                    //end
+                    return View(order);
             } else
             {
                 return RedirectToPage("Account/Login");
-            }
-
-            
+            }            
         }
         public IActionResult Edit()
         {
@@ -127,9 +129,13 @@ namespace FoodyWebApplication.Controllers
                 if (cart != null && cart.ProductList.Count > 0)
                 {
                     order.OrderDate = DateTime.Now;
-                    order.RequiredDate = DateTime.Now.AddDays(7);
-                    order.ShippedDate = DateTime.Now.AddDays(14);
-                    string total = SessionExtension.Get<string>(HttpContext.Session, "GioHangTotal");
+                    order.RequiredDate = DateTime.Now.AddDays(10);
+                    order.ShippedDate = DateTime.Now.AddDays(7);
+                    string? total = SessionExtension.Get<string>(HttpContext.Session, "GioHangTotal");
+                    if(total == null)
+                    {
+                        total = "0";
+                    }
                     order.TotalPrice = Decimal.Parse(total);
                     order.AccountId = user.AccountId;
                     order.Account = user;
@@ -166,24 +172,37 @@ namespace FoodyWebApplication.Controllers
         {
             order.OrderDetails = new List<OrderDetail>();
             var cart = SessionExtension.GetCart(HttpContext.Session);
-            foreach (var item in cart.ProductList)
+            if(cart != null)
             {
-                var orderDetail = new OrderDetail()
+                foreach (var item in cart.ProductList)
                 {
-                    ProductId = item.ProductId,
-                    Quantity = item.QuantityPerUnit,
-                    UnitPrice = item.UnitPrice,
+                    var orderDetail = new OrderDetail()
+                    {
+                        ProductId = item.ProductId,
+                        Quantity = item.QuantityPerUnit,
+                        UnitPrice = item.UnitPrice,
 
-                };
-                order.OrderDetails.Add(orderDetail);
+                    };
+                    order.OrderDetails.Add(orderDetail);
+                }
+                if (order.OrderDetails.Count() > 0 && ModelState.ErrorCount <= 1)
+                {
+                    try
+                    {
+                        await _unitOfWork.OrderService.Add(order);
+                        cart = new Models.CartModel();
+                        SessionExtension.Set<CartModel>(HttpContext.Session, "GioHang", cart);
+                        SessionExtension.Set<string>(HttpContext.Session, "GioHangTotal", "0");
+                        return RedirectToAction(nameof(Index));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        return RedirectToAction(nameof(Create));
+                    }
+                }
+                ViewData["AccountId"] = new SelectList(await _unitOfWork.AccountService.Get(), "AccountId", "Address", order.AccountId);
             }
-            if (order.OrderDetails.Count() > 0 && ModelState.ErrorCount <= 1)
-            {
-                await _unitOfWork.OrderService.Add(order);
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["AccountId"] = new SelectList(await _unitOfWork.AccountService.Get(), "AccountId", "Address", order.AccountId);
-           
             return View(order);
         }
 

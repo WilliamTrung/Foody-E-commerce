@@ -52,13 +52,9 @@
                     var loginuser1 = SessionExtension.GetLoginUser(Context.Session);
                     if (loginuser1 != null)
                     {
-                        if (loginuser1.RoleId == 1 || loginuser1.RoleId == 3)
-                        {
                             <td>
-                                <a asp-action="Edit" asp-route-id="@Model?.AccountId">Edit</a> 
-                                 <a class="btn btn-primary btn-lg active" role="button" aria-pressed="true" asp-action="Index">Back to  Account List</a>|
-                            </td>
-                        }
+                                <a asp-action="Edit" asp-route-id="@Model?.AccountId">Edit</a>                                  
+                            </td>                        
                     }
                 }
 

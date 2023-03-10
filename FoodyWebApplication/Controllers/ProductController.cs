@@ -9,6 +9,7 @@ using ApplicationCore;
 using ApplicationCore.Models;
 using BusinessService.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
+using FoodyWebApplication.Helper;
 
 namespace FoodyWebApplication.Controllers
 {
@@ -25,8 +26,17 @@ namespace FoodyWebApplication.Controllers
         // GET: Product
         public async Task<IActionResult> Index()
         {
-            var foodyContext = await _unitOfWork.ProductService.Get(expression: null, "Category", "Supplier");
-            return View(foodyContext.ToList());
+            var loginuser = SessionExtension.GetLoginUser(HttpContext.Session);
+            IEnumerable<Product>? products;
+            if(loginuser != null && (loginuser.RoleId == 1 || loginuser.RoleId == 3)) //is admin or seller
+            {
+                products = await _unitOfWork.ProductService.Get(expression: null, "Category", "Supplier");
+            } else
+            {
+                products = await _unitOfWork.ProductService.Get(expression: c => !c.IsDeleted, "Category", "Supplier");
+            }
+            
+            return View(products.ToList());
         }
 
         // GET: Product/Details/5
@@ -62,19 +72,32 @@ namespace FoodyWebApplication.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice")] Product product, IFormFile file)
-        {
+        {            
             if (ModelState.IsValid)
             {
-                var tail = "." + file.FileName.Split('.').Last();
-                var file_stored = "wwwroot" + "/" + "images" + "/" + product.ProductName + tail;
-                var file_save = "images" + "/" + product.ProductName + tail;
-                using (var filestream = new FileStream(file_stored, FileMode.Create))
+                try
                 {
-                    await file.CopyToAsync(filestream);
+                    await _unitOfWork.ProductService.Add(product);
+                    var tail = "." + file.FileName.Split('.').Last();
+                    var file_stored = "wwwroot" + "/" + "images" + "/" + product.ProductName + tail;
+                    var file_save = "images" + "/" + product.ProductName + tail;
+                    using (var filestream = new FileStream(file_stored, FileMode.Create))
+                    {
+                        await file.CopyToAsync(filestream);
+                    }
+                    product.ProductImage = file_save;
+                    await _unitOfWork.ProductService.Update(product);
+                    return RedirectToAction(nameof(Index));
+                } catch (Exception ex)
+                {
+                    var message = ex.Message;
+                    var error = message.Split("-");
+                    if (error.Count() == 2)
+                    {
+                        ModelState.AddModelError(error[0], error[1]);
+                    }
                 }
-                product.ProductImage = file_save;
-                await _unitOfWork.ProductService.Add(product);
-                return RedirectToAction(nameof(Index));
+                
             }
           
             var categories = _unitOfWork.CategoryService.Get().Result;
@@ -83,7 +106,7 @@ namespace FoodyWebApplication.Controllers
             ViewData["SupplierId"] = new SelectList(suppliers, "SupplierId", "Address");
             return View(product);
         }
-        [Authorize(Roles = "Administrator,Seller")]
+        [Authorize]
         // GET: Product/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -103,31 +126,38 @@ namespace FoodyWebApplication.Controllers
             ViewData["SupplierId"] = new SelectList(suppliers, "SupplierId", "Address");
             return View(product);
         }
-        [Authorize(Roles = "Administrator,Seller")]
+        [Authorize]
         // POST: Product/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice,ProductImage,IsDeleted")] Product product, IFormFile file)
+        public async Task<IActionResult> Edit(int id, string oldPic,[Bind("ProductId,ProductName,SupplierId,CategoryId,QuantityPerUnit,UnitPrice,IsDeleted")] Product product, IFormFile? file)
         {
             if (id != product.ProductId)
             {
                 return NotFound();
             }
-
+            ModelState.Remove("oldPic");
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var tail = "." + file.FileName.Split('.').Last();
-                    var file_stored = "wwwroot" + "/" + "images" + "/" + product.ProductName + tail;
-                    var file_save = "images" + "/" + product.ProductName + tail;
-                    using (var filestream = new FileStream(file_stored, FileMode.Create))
+                    if(file != null)
                     {
-                        await file.CopyToAsync(filestream);
+                        var tail = "." + file.FileName.Split('.').Last();
+                        var file_stored = "wwwroot" + "/" + "images" + "/" + product.ProductName + tail;
+                        var file_save = "images" + "/" + product.ProductName + tail;
+                        using (var filestream = new FileStream(file_stored, FileMode.Create))
+                        {
+                            await file.CopyToAsync(filestream);
+
+                        }
+                        product.ProductImage = file_save;
+                    } else
+                    {
+                        product.ProductImage = oldPic;
                     }
-                    product.ProductImage = file_save;
                     await _unitOfWork.ProductService.Update(product);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -163,9 +193,9 @@ namespace FoodyWebApplication.Controllers
         // POST: Product/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int ProductId)
         {
-            var product = await _unitOfWork.ProductService.GetFirst(p => p.ProductId == id, "Category", "Supplier");
+            var product = await _unitOfWork.ProductService.GetFirst(p => p.ProductId == ProductId, "Category", "Supplier");
             if (product != null)
             {
                 await _unitOfWork.ProductService.Delete(product);
