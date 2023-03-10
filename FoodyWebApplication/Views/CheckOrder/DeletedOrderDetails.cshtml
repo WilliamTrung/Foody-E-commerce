@@ -53,7 +53,37 @@
             @Html.DisplayFor(model => model.Account.Address)
         </dd>
     </dl>
+    <table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetails.First().OrderId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetails.First().Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDetails.First().UnitPrice)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.OrderDetails) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnitPrice)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
 </div>
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="DeletedOrderIndex">Back to List</a>
 </div>
