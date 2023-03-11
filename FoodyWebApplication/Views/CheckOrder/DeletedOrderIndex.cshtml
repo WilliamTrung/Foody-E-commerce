@@ -36,36 +36,38 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-    if (item.IsDeleted == true)
+        @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RequiredDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ShippedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Freight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ShipAddress)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalPrice)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Account.Address)
-            </td>
-            <td>
-            <a asp-action="DeletedOrderDetails" asp-route-id="@item.OrderId">Details</a>
-            </td>
-        </tr>
+            if (item.IsDeleted == true)
+            {
+                <tr>
+                    <td>
+                        @Convert.ToDateTime(item.OrderDate).ToString("dd/MM/yyyy")
+
+                    </td>
+                    <td>
+                        @Convert.ToDateTime(item.RequiredDate).ToString("dd/MM/yyyy")
+                    </td>
+                    <td>
+                        @Convert.ToDateTime(item.ShippedDate).ToString("dd/MM/yyyy")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Freight)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ShipAddress)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TotalPrice)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Account.Address)
+                    </td>
+                    <td>
+                        <a asp-action="DeletedOrderDetails" asp-route-id="@item.OrderId">Details</a>
+                    </td>
+                </tr>
+            }
         }
-}
     </tbody>
 </table>

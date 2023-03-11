@@ -27,37 +27,53 @@ namespace BusinessService.Repository
             }
             return list;
         }
-        public override Task Add(Order entity)
+        public override async Task Add(Order entity)
         {
 
             entity.OrderDate = DateTime.Now;
             entity.RequiredDate = DateTime.Now.AddDays(10);
             entity.ShippedDate = DateTime.Now.AddDays(7);
-            return base.Add(entity);
+            try
+            {
+                await base.Add(entity);
+                foreach(var detail in entity.OrderDetails)
+                {
+                    var product = _unitOfWork.ProductService.GetFirst(c => c.ProductId == detail.ProductId).Result;
+                    if(product != null)
+                    {
+                        product.QuantityPerUnit -= detail.Quantity;
+                        await _unitOfWork.ProductService.Update(product);
+                    }
+                    
+                }
+            } catch {
+                throw new Exception("ADD FAILED");
+            }            
         }
         public override async Task Delete(Order entity)
         {
-            var today = DateTime.Today;
-            bool canDelete = true;
-            if(entity.ShippedDate != null)
-            {
-                //shipped date is 3 day later from today
-                if (!(entity.ShippedDate.Value.Date.CompareTo(today) >= 3)) { 
-                    canDelete= false;
-                }
-            }
-            //incase shippeddate is unknown
-            if(entity.RequiredDate.Date.CompareTo(today) >= 3)
-            {                
-                canDelete= false;
-            }
-            if(canDelete)
-            {
-                await base.Delete(entity);
-            } else
-            {
-                throw new Exception("OVERDUE");
-            }
+
+            //var today = DateTime.Today;
+            //bool canDelete = true;
+            //if(entity.ShippedDate != null)
+            //{
+            //    //shipped date is 3 day later from today
+            //    if (!(entity.ShippedDate.Value.Date.CompareTo(today) >= 3)) { 
+            //        canDelete= false;
+            //    }
+            //}
+            ////incase shippeddate is unknown
+            //if(entity.RequiredDate.Date.CompareTo(today) >= 3)
+            //{                
+            //    canDelete= false;
+            //}
+            //if(canDelete)
+            //{
+            //    await base.Delete(entity);
+            //} else
+            //{
+            //    throw new Exception("OVERDUE");
+            //}
         }
     }
 }
