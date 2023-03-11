@@ -66,7 +66,7 @@ namespace FoodyWebApplication.Controllers
         }
 
         // GET: Order/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var order = new Order();
             var user = HttpContext.Session.GetLoginUser();
@@ -84,7 +84,8 @@ namespace FoodyWebApplication.Controllers
                     order.ShippedDate = DateTime.Now.AddDays(7);
                     order.TotalPrice = cart.Total; ;
                     order.AccountId = user.AccountId;
-                    order.Account = user;
+                    order.ShipAddress = user.Address;
+                    //order.Account = user;
                     order.OrderDetails = new List<OrderDetail>();
                     foreach (var item in cart.ProductList)
                     {
@@ -99,70 +100,24 @@ namespace FoodyWebApplication.Controllers
                     }
                     cart = new CartModel();
                     SessionExtension.Set<CartModel>(HttpContext.Session, "GioHang", cart);
-                    return RedirectToAction("Index", "Product");
+                    await _unitOfWork.OrderService.Add(order);
+                    return RedirectToAction("Details", "Checkout", new {id=order.OrderId});
                 }
                 else if (cart != null && cart.ProductList.Count == 0)
                 {
                     return RedirectToAction("Index", "Product");
+                } else
+                {
+                    cart = new CartModel();
+                    SessionExtension.Set<CartModel>(HttpContext.Session, "GioHang", cart);
+                    return RedirectToAction("Index", "Product");
                 }
-
-
-                    order.IsDeleted = false;
-                    //end
-                    return View(order);
             } else
             {
                 return RedirectToPage("Account/Login");
             }            
         }
-        public IActionResult Edit()
-        {
-            var order = new Order();
-            var user = HttpContext.Session.GetLoginUser();
-            if (user != null)
-            {
-                //get cart from session
-                //pass data from cart to order
-                //set default value to order
-                var cart = SessionExtension.GetCart(HttpContext.Session);
-
-                if (cart != null && cart.ProductList.Count > 0)
-                {
-                    order.OrderDate = DateTime.Now;
-                    order.RequiredDate = DateTime.Now.AddDays(10);
-                    order.ShippedDate = DateTime.Now.AddDays(7);
-                    string? total = SessionExtension.Get<string>(HttpContext.Session, "GioHangTotal");
-                    if(total == null)
-                    {
-                        total = "0";
-                    }
-                    order.TotalPrice = Decimal.Parse(total);
-                    order.AccountId = user.AccountId;
-                    order.Account = user;
-                    order.OrderDetails = new List<OrderDetail>();
-                    foreach (var item in cart.ProductList)
-                    {
-                        var orderDetail = new OrderDetail()
-                        {
-                            ProductId = item.ProductId,
-                            Quantity = item.QuantityPerUnit,
-                            UnitPrice = item.UnitPrice,
-
-                        };
-                        order.OrderDetails.Add(orderDetail);
-                    }
-                }
-                order.IsDeleted = false;
-                //end
-                return View(order);
-            }
-            else
-            {
-                return RedirectToPage("/Account/Login");
-            }
-
-
-        }
+        
         // POST: Order/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.

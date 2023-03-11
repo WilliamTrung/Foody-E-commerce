@@ -10,23 +10,29 @@
     <h4>Order</h4>
     <hr />
     <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.OrderId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.OrderId)
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.OrderDate)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderDate)
+            @Convert.ToDateTime(Model.OrderDate).ToString("dd/MM/yyyy")
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.RequiredDate)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RequiredDate)
+            @Convert.ToDateTime(Model.RequiredDate).ToString("dd/MM/yyyy")
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.ShippedDate)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ShippedDate)
+            @Convert.ToDateTime(Model.ShippedDate).ToString("dd/MM/yyyy")
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Freight)
@@ -63,7 +69,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.OrderDetails.First().OrderId)
+                Product Name
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.OrderDetails.First().Quantity)
@@ -77,7 +83,7 @@
 @foreach (var item in Model.OrderDetails) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.OrderId)
+                @Html.DisplayFor(modelItem => item.Product.ProductName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Quantity)
@@ -92,7 +98,6 @@
    
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.OrderId">Edit</a> |
     <a asp-action="Index">Back to List</a>
     
 </div>
