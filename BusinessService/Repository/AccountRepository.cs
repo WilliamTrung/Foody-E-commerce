@@ -27,7 +27,7 @@ namespace BusinessService.Repository
             //account.RoleId = 2;//Member
             
             var match_username = _unitOfWork.AccountService.GetFirst(c => c.Username.Trim().ToLower() == account.Username.ToLower()).Result;
-            if(match_username != null)
+            if(match_username == null)
             {
                 var role = _unitOfWork.RoleService.GetFirst(c => c.Name == "Member").Result;
                 if (role != null)
