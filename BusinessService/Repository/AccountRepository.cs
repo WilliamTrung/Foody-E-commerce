@@ -32,7 +32,7 @@ namespace BusinessService.Repository
                 var role = _unitOfWork.RoleService.GetFirst(c => c.Name == "Member").Result;
                 if (role != null)
                 {
-                    account.AccountId = role.Id;
+                    account.RoleId = role.Id;
                     account.IsDeleted = false;
                     await _unitOfWork.AccountService.Add(account);
                     return account;
