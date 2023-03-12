@@ -72,7 +72,7 @@ namespace FoodyWebApplication.Controllers
             ViewData["RoleId"] = new SelectList(roles, "Id", "Name", account.RoleId);
             return View(account);
         }
-        [Authorize(Roles = "Administrator")]
+        [Authorize]
         // GET: Account/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
