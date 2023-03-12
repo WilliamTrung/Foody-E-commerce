@@ -19,7 +19,7 @@ namespace ApplicationCore.Models
         public string Password { get; set; } = null!;
         [Required]
         public string Address { get; set; } = null!;
-        
+        [Phone]
         public string Phone { get; set; } = null!;
         public virtual Role? Role { get; set; } = null!;
 

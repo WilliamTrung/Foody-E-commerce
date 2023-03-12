@@ -177,13 +177,20 @@ namespace FoodyWebApplication.Controllers
             //objLoginModel.ReturnUrl = ReturnUrl;
             return View(objLoginModel);
         }
+        // GET: Account/Register
+        public async Task<IActionResult> Register()
+        {
+            var roles = await _unitOfWork.RoleService.Get();
+            ViewData["RoleId"] = new SelectList(roles, "Id", "Name");
+            return View();
+        }
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginModel objLoginModel)
         {
             if (ModelState.IsValid)
             {
-                var user = _unitOfWork.AccountService.GetFirst(x => x.Username == objLoginModel.UserName && x.Password == objLoginModel.Password, includeProperties: "Role").Result;
+                var user = _unitOfWork.AccountService.GetFirst(x => x.Username == objLoginModel.UserName && x.Password == objLoginModel.Password && !x.IsDeleted, includeProperties: "Role").Result;
                 if (user != null)
                 {
                     //A claim is a statement about a subject by an issuer and    
@@ -216,6 +223,65 @@ namespace FoodyWebApplication.Controllers
                 }
             }
             return View(objLoginModel);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register(RegisterModel register)
+        {
+            var regiser_account = new Account()
+            {
+                Address = register.Address,
+                Password = register.Password,
+                Phone = register.Phone,
+                RoleId = register.RoleId,
+                Username = register.Username,
+            };
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var user = await _unitOfWork.AccountService.Register(regiser_account);
+                    if (user != null)
+                    {
+                        //A claim is a statement about a subject by an issuer and    
+                        //represent attributes of the subject that are useful in the context of authentication and authorization operations.
+                        var claims = new List<Claim>() {
+                        new Claim(ClaimTypes.Name, user.Username, ClaimValueTypes.String),
+                        new Claim(ClaimTypes.Role, user.Role.Name, ClaimValueTypes.String)
+                    };
+                        //Initialize a new instance of the ClaimsIdentity with the claims and authentication scheme    
+                        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        //Initialize a new instance of the ClaimsPrincipal with ClaimsIdentity    
+                        var principal = new ClaimsPrincipal(identity);
+                        //SignInAsync is a Extension method for Sign in a principal for the specified scheme.    
+                        await HttpContext.SignInAsync(
+                                    CookieAuthenticationDefaults.AuthenticationScheme,
+                                    new ClaimsPrincipal(identity),
+                                    new AuthenticationProperties
+                                    {
+                                        ExpiresUtc = DateTime.UtcNow.AddMinutes(20)
+                                    });
+                        Helper.SessionExtension.Set(HttpContext.Session, "login-user", user);
+                        //Account? userlog = Helper.SessionExtension.GetLoginUser(HttpContext.Session);
+                        return LocalRedirect("~/Product/Index");
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Cannot register this user";
+                        return View(register);
+                    }
+                } catch (Exception ex)
+                {
+                    if(ex.Message == "DUPLICATE USERNAME")
+                    {
+                        ModelState.AddModelError("Username", "This username has been taken!");
+                    }
+                }
+                
+            }
+            var roles = await _unitOfWork.RoleService.Get();
+            ViewData["RoleId"] = new SelectList(roles, "Id", "Name");
+            return View(regiser_account);
         }
         public async Task<IActionResult> LogOut()
         {

@@ -11,5 +11,6 @@ namespace BusinessService.Service
     public interface IAccountService : IGenericRepository<Account>
     {
         Task<Account> Login(Account account);
+        Task<Account?> Register(Account account);
     }
 }

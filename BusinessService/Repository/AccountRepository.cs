@@ -21,5 +21,28 @@ namespace BusinessService.Repository
         {
             throw new NotImplementedException();
         }
+
+        public async Task<Account?> Register(Account account)
+        {
+            //account.RoleId = 2;//Member
+            
+            var match_username = _unitOfWork.AccountService.GetFirst(c => c.Username.Trim().ToLower() == account.Username.ToLower()).Result;
+            if(match_username != null)
+            {
+                var role = _unitOfWork.RoleService.GetFirst(c => c.Name == "Member").Result;
+                if (role != null)
+                {
+                    account.AccountId = role.Id;
+                    account.IsDeleted = false;
+                    await _unitOfWork.AccountService.Add(account);
+                    return account;
+                }
+            } else
+            {
+                throw new Exception("DUPLICATE USERNAME");
+            }
+            
+            return null;
+        }
     }
 }
