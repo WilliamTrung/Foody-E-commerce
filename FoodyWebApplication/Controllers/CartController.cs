@@ -82,7 +82,7 @@ namespace FoodyWebApplication.Controllers
                     {
                         var find_db = await _unitOfWork.ProductService.GetFirst(c => c.ProductId == find.ProductId);
                         if(find_db != null)
-                            AddToCart(cart, find_db, find.QuantityPerUnit);
+                            UpdateCartHandler(cart, find_db, (int)quantity);
                     }
                 }
                 else
@@ -140,6 +140,29 @@ namespace FoodyWebApplication.Controllers
                         cart.ProductList.Add(product);
                     }
                 } else
+                {
+                    string error = "Exceed maxinum quantity!";
+                    TempData["Message"] = error;
+                }
+
+            }
+        }
+        private void UpdateCartHandler(CartModel cart, Product product, int quantity)
+        {
+            if (quantity > 0) // chưa có
+            {
+                var find = cart.ProductList.FirstOrDefault(p => p.ProductId == product.ProductId);
+                //check quantity of product vs max quantity in product_check                
+                bool checkQuantity = product.QuantityPerUnit >= quantity;
+                //end check
+                if (checkQuantity)
+                {
+                    if (find != null)
+                    {
+                        find.QuantityPerUnit = quantity;
+                    }
+                }
+                else
                 {
                     string error = "Exceed maxinum quantity!";
                     TempData["Message"] = error;
